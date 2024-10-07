@@ -1,0 +1,50 @@
+
+package com.movie.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
+import com.movie.model.Movie;
+
+@RestController
+@RequestMapping("/api/movies")
+public class MovieController {
+	private static List<Movie> movies = new ArrayList<>();
+
+	@GetMapping("/")
+	public List<Movie> getAll() {
+		return movies;
+	}
+
+	@GetMapping("/{id}")
+	public Movie get(@PathVariable int id) {
+		id = id-1;
+		return movies.get(id);
+	}
+
+	@PostMapping("")
+	public Movie add(@RequestBody Movie movie) {
+		int newIdx = 1;
+		for (Movie m : movies)
+			newIdx++;
+		movie.id = newIdx;
+		movies.add(movie);
+		return movie;
+	}
+
+	@PutMapping("/{id}/")
+	public String update(@PathVariable int id, @RequestBody Movie movie) {
+		id = id-1;
+		movies.set(id, movie);
+		return "Movie updated.";
+	}
+
+	@DeleteMapping("/{idx}")
+	public String delete(@PathVariable int id) {
+		id = id-1;
+		movies.remove(id);
+		return "Movie removed";
+	}
+}

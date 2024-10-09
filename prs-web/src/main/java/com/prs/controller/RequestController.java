@@ -1,5 +1,6 @@
 package com.prs.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +37,10 @@ public class RequestController {
 
 	@PostMapping
 	public Request add(@RequestBody Request request) {
+		// need to do logic for request number creation. Must have a first request in DB with correct format
+		request.setStatus("new");
+		request.setTotal(0);
+		request.setSubmittedDate(LocalDateTime.now());
 		return requestRepo.save(request);
 	}
 

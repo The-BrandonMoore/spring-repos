@@ -32,22 +32,24 @@ public class CreditController {
 		}
 	}
 
-	@PostMapping
+	@PostMapping("")
 	public Credit add(@RequestBody Credit credit) {
 		
 		return creditRepo.save(credit);
 	}
 	@PutMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void put(@PathVariable int id, @RequestBody Credit credit) {
+	public Credit put(@PathVariable int id, @RequestBody Credit credit) {
+		Credit c = null;
 		if (id != credit.getId()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Credit id mismatch vs URL.");
 		}
 		else if (creditRepo.existsById(credit.getId())) {
-			creditRepo.save(credit);
+			c = creditRepo.save(credit);
 		} else {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Credit not found for id: " + id);
 		}
+		return c;
 	}
 	
 	@DeleteMapping("/{id}")

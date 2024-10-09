@@ -1,12 +1,14 @@
 package com.prs.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 
 
 @Entity
 public class Request {
+
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +23,7 @@ public class Request {
 	private String deliveryMode;
 	private String status;
 	private double total;
-	private LocalDate dateSubmitted;
+	private LocalDateTime submittedDate;
 	private String reasonForRejection;
 
 	
@@ -80,11 +82,11 @@ public class Request {
 	public void setTotal(double total) {
 		this.total = total;
 	}
-	public LocalDate getDateSubmitted() {
-		return dateSubmitted;
+	public LocalDateTime getSubmittedDate() {
+		return submittedDate;
 	}
-	public void setDateSubmitted(LocalDate dateSubmitted) {
-		this.dateSubmitted = dateSubmitted;
+	public void setSubmittedDate(LocalDateTime submittedDate) {
+		this.submittedDate = submittedDate;
 	}
 	public String getReasonForRejection() {
 		return reasonForRejection;

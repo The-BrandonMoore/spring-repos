@@ -9,7 +9,7 @@ public class LineItem {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	@ManyToOne
-	@JoinColumn(name="ProductId")
+	@JoinColumn(name="RequestId")
 	private Request request;
 	@ManyToOne
 	@JoinColumn(name="ProductId")

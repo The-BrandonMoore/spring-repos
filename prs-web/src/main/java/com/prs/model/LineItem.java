@@ -1,18 +1,23 @@
 package com.prs.model;
 
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.*;
+
 import jakarta.persistence.*;
 
 @Entity
-public class LineItem {
+public class LineItem implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	@ManyToOne
-	@JoinColumn(name="RequestId")
+	@JoinColumn(name="requestId")
+	@JsonIgnoreProperties("request")
 	private Request request;
 	@ManyToOne
-	@JoinColumn(name="ProductId")
+	@JoinColumn(name="productId")
 	private Product product;
 	private Integer quantity;
 	

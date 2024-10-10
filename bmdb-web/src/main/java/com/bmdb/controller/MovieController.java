@@ -62,4 +62,20 @@ public class MovieController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Movie not found for id: " + id);
 		}
 	}
+	
+	@GetMapping("/year-and-rating/{rating}/{year}")
+	public List<Movie> getMovieByYearAndRating(@PathVariable int year, @PathVariable String rating){
+		return movieRepo.findByRatingAndYear(rating, year);
+	}
+	
+	@GetMapping("/rating-after-year/{rating}/{year}")
+	public List<Movie> getMovieByRatingAfterYear(@PathVariable String rating, @PathVariable int year){
+		return movieRepo.findByRatingAndYearIsGreaterThanEqual(rating, year);
+	}
+	
+	@GetMapping("/notrating/{rating}")
+	public List<Movie> getMovieWhereNotRating(@PathVariable String rating){
+		return movieRepo.findByRatingNot(rating);
+	}
+	
 }

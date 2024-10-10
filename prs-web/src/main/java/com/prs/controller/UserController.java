@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.prs.model.User;
+import com.prs.model.UserLogin;
 import com.prs.repo.UserRepo;
 
 @RestController
@@ -61,5 +62,13 @@ public class UserController {
 		else {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found for id: " + id);
 		}
+	}
+	
+	@PostMapping("/login")
+	public User login(@RequestBody UserLogin userLogin) {
+		User currentUser = userRepo.findByUsernameAndPassword(userLogin.getUsername(), userLogin.getPassword());
+		if (currentUser != null)
+		return currentUser;
+		else{	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username or password");}
 	}
 }

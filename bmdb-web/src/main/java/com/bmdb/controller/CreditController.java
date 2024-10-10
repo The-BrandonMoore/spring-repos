@@ -38,7 +38,6 @@ public class CreditController {
 		return creditRepo.save(credit);
 	}
 	@PutMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public Credit put(@PathVariable int id, @RequestBody Credit credit) {
 		Credit c = null;
 		if (id != credit.getId()) {
@@ -63,5 +62,17 @@ public class CreditController {
 		}
 	}
 	
-
+	//BEYOND CRUD BELOW HERE
+	
+	//return all credits for a particular movie id -- Movie-Credits
+	@GetMapping("/movie-credits/{movieId}")
+	public List<Credit> getCreditsForMovie(@PathVariable int movieId){
+		return creditRepo.findMovieById(movieId);
+	}
+	
+	//return all credits for a particular actor -- Actor-Filmography
+	@GetMapping("/actor-credits/{actorId}")
+	public List<Credit> getCreditsForActor(@PathVariable int actorId){
+		return creditRepo.findActorById(actorId);
+	}
 }

@@ -1,13 +1,20 @@
 package com.prs.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 
 
 @Entity
-public class Request {
+public class Request implements Serializable{
 
 	
 	@Id
@@ -25,7 +32,12 @@ public class Request {
 	private double total;
 	private LocalDateTime submittedDate;
 	private String reasonForRejection;
+	@OneToMany(mappedBy = "request", targetEntity=LineItem.class,cascade=CascadeType.ALL,
+			fetch=FetchType.EAGER)
+	@JsonIgnoreProperties("request")
+	private List<LineItem> lineItems = new ArrayList<LineItem>();
 
+	
 	
 	
 	public Integer getId() {
@@ -95,6 +107,11 @@ public class Request {
 		this.reasonForRejection = reasonForRejection;
 	}
 	
-	
+	public List<LineItem> getLineItems() {
+		return lineItems;
+	}
+	public void setLineItems(List<LineItem> lineItems) {
+		this.lineItems = lineItems;
+	}
 
 }

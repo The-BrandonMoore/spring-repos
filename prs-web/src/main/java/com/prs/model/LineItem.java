@@ -18,6 +18,7 @@ public class LineItem implements Serializable {
 	private Request request;
 	@ManyToOne
 	@JoinColumn(name="productId")
+
 	private Product product;
 	private Integer quantity;
 	

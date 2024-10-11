@@ -88,8 +88,10 @@ public class LineItemController {
 			lineItem.setRequest(request);
 			lineItem.setProduct(product);
 			lineItemRepo.save(lineItem);
-			//I'm not sure if I need to do something to the request here or not. I'm going to try not.
-			//new double total variable 
+			//had to reload the updated request to make sure the line items are correct
+			request = requestRepo.findById(request.getId())
+			            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
+			 //new double total variable 
 			double total = 0;
 			//recalculate the total of the request
 			for (LineItem item: request.getLineItems()) {
@@ -105,19 +107,17 @@ public class LineItemController {
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable int id) {
-		if (lineItemRepo.existsById(id)) {
-			Optional<LineItem> findLineItem = lineItemRepo.findById(id);
-			if (!findLineItem.isPresent()) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "LineItem not found for id: " + id);
-			}
-			LineItem lineItem = findLineItem.get();
+		
+			LineItem lineItem = lineItemRepo.findById(id)
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "LineItem not found for id: " + id));
 			Request request = requestRepo.findById(lineItem.getRequest().getId())
 			        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
 
-			lineItem.setRequest(request);
-			lineItemRepo.deleteById(id);
 			request.getLineItems().remove(lineItem);
-			requestRepo.save(request);
+			//requestRepo.save(request);
+			lineItemRepo.deleteById(id);
+			//request = requestRepo.findById(request.getId())
+			//            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
 			//new double total variable 
 			double total = 0;
 			//recalculate the total of the request
@@ -126,10 +126,7 @@ public class LineItemController {
 			}
 			request.setTotal(total);
 			requestRepo.save(request);	
-		}
-		else {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "LineItem not found for id: " + id);
-		}
+
 	}
 	
 	@GetMapping("lines-for-req/{requestId}")

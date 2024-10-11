@@ -32,7 +32,7 @@ public class Request implements Serializable{
 	private double total;
 	private LocalDateTime submittedDate;
 	private String reasonForRejection;
-	@OneToMany(mappedBy = "request", targetEntity=LineItem.class,cascade=CascadeType.ALL,
+	@OneToMany(mappedBy = "request", targetEntity=LineItem.class,cascade=CascadeType.ALL, orphanRemoval = true,
 			fetch=FetchType.EAGER)
 	@JsonIgnoreProperties("request")
 	private List<LineItem> lineItems = new ArrayList<LineItem>();

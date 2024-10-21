@@ -40,29 +40,31 @@ public class LineItemController {
 
 	@PostMapping
 	public LineItem add(@RequestBody LineItem lineItem) {
-	    if (lineItem.getRequest() == null || lineItem.getRequest().getId() == null) {
-	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request must not be null and must have a valid ID");
-	    }
-	    if (lineItem.getProduct() == null || lineItem.getProduct().getId() == null) {
-	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product must not be null and must have a valid ID");
-	    }
-		
-		//get request
-		Request request = requestRepo.findById(lineItem.getRequest().getId())
-		        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
+		if (lineItem.getRequest() == null || lineItem.getRequest().getId() == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Request must not be null and must have a valid ID");
+		}
+		if (lineItem.getProduct() == null || lineItem.getProduct().getId() == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Product must not be null and must have a valid ID");
+		}
 
-		//get product
-		 Product product = productRepo.findById(lineItem.getProduct().getId())
-			        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+		// get request
+		Request request = requestRepo.findById(lineItem.getRequest().getId())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
+
+		// get product
+		Product product = productRepo.findById(lineItem.getProduct().getId())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 
 		lineItem.setRequest(request);
 		lineItem.setProduct(product);
 		lineItemRepo.save(lineItem);
 		request.getLineItems().add(lineItem);
-		//new double total variable 
+		// new double total variable
 		double total = 0;
-		//recalculate the total of the request
-		for (LineItem item: request.getLineItems()) {
+		// recalculate the total of the request
+		for (LineItem item : request.getLineItems()) {
 			total += (item.getProduct().getPrice()) * (item.getQuantity());
 		}
 		request.setTotal(total);
@@ -75,70 +77,60 @@ public class LineItemController {
 	public void put(@PathVariable int id, @RequestBody LineItem lineItem) {
 		if (id != lineItem.getId()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "LineItem id mismatch vs URL.");
-		}
-		else if (lineItemRepo.existsById(lineItem.getId())) {
-			//find request that matches the lineItemId
+		} else if (lineItemRepo.existsById(lineItem.getId())) {
+			// find request that matches the lineItemId
 			Request request = requestRepo.findById(lineItem.getRequest().getId())
-			        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
 
-			//get product
-			 Product product = productRepo.findById(lineItem.getProduct().getId())
-				        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+			// get product
+			Product product = productRepo.findById(lineItem.getProduct().getId())
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
 
 			lineItem.setRequest(request);
 			lineItem.setProduct(product);
 			lineItemRepo.save(lineItem);
-			//had to reload the updated request to make sure the line items are correct
+			// had to reload the updated request to make sure the line items are correct
 			request = requestRepo.findById(request.getId())
-			            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
-			 //new double total variable 
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
+			// new double total variable
 			double total = 0;
-			//recalculate the total of the request
-			for (LineItem item: request.getLineItems()) {
+			// recalculate the total of the request
+			for (LineItem item : request.getLineItems()) {
 				total += (item.getProduct().getPrice()) * (item.getQuantity());
 			}
 			request.setTotal(total);
-			requestRepo.save(request);	
+			requestRepo.save(request);
 		} else {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "LineItem not found for id: " + id);
 		}
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable int id) {
-		
 			LineItem lineItem = lineItemRepo.findById(id)
-					.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "LineItem not found for id: " + id));
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
 			Request request = requestRepo.findById(lineItem.getRequest().getId())
-			        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
 
-			request.getLineItems().remove(lineItem);
-			//requestRepo.save(request);
 			lineItemRepo.deleteById(id);
-			//request = requestRepo.findById(request.getId())
-			//            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found"));
-			//new double total variable 
+
 			double total = 0;
-			//recalculate the total of the request
-			for (var item: request.getLineItems()) {
+			// recalculate the total of the request
+			for (var item : request.getLineItems()) {
 				total += item.getProduct().getPrice() * item.getQuantity();
 			}
 			request.setTotal(total);
-			requestRepo.save(request);	
-
+			requestRepo.save(request);
 	}
-	
+
 	@GetMapping("lines-for-req/{requestId}")
-	public List<LineItem> getLineItemsForRequestId(int requestId){
+	public List<LineItem> getLineItemsForRequestId(int requestId) {
 		List<LineItem> lineItems = lineItemRepo.findByRequestIdEquals(requestId);
 		if (lineItems == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "LineItem not found for Request: " + requestId);
 		}
 		return lineItems;
 	}
-	
-	
-	
-	
+
 }
